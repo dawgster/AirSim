@@ -44,7 +44,9 @@ public:
     void simSetWeatherParameter(WorldSimApiBase::WeatherParameter param, float val);
 
     Pose simGetObjectPose(const std::string& object_name) const;
+    vector<Pose> simGetObjectPoses(const std::string& object_name) const;
     bool simSetObjectPose(const std::string& object_name, const Pose& pose, bool teleport = true);
+    bool simSpawnObject(const std::string& class_name, const Pose& pose);
     
     //task management APIs
     void cancelLastTask(const std::string& vehicle_name = "");
