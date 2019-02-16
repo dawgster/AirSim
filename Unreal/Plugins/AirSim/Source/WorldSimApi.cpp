@@ -110,14 +110,14 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
 bool WorldSimApi::SpawnObject(const std::string& class_name, const WorldSimApi::Pose& pose)
 {
     bool result = false;
-    UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &pose]() {
+    UAirBlueprintLib::RunCommandOnGameThread([this, &class_name, &pose, &result]() {
         
         FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
         FActorSpawnParameters SpawnInfo;
         
-        UClass* ObjectToSpawn = FindObject<UClass>(ANY_PACKAGE, class_name);
+        UClass* ObjectToSpawn = FindObject<UClass>(ANY_PACKAGE, *FString(class_name.c_str()));
         
-        auto spawned = simmode_->GetWorld()->SpawnActor(ObjectToSpawn, actor_transform, SpawnInfo); 
+        auto spawned = simmode_->GetWorld()->SpawnActor(ObjectToSpawn, &actor_transform, SpawnInfo); 
         
         if(spawned != nullptr) {
             result = true;
