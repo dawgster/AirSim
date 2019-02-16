@@ -76,6 +76,19 @@ WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) con
     return result;
 }
 
+std::vector<WorldSimApi::Pose> WorldSimApi::getObjectPoses(const std::string& object_name) const
+{
+    std::vector<Pose> results;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &results]() {
+        std::vector<AActor*> actors = UAirBlueprintLib::FindActors<AActor>(simmode_, FString(object_name.c_str()));
+        for (AActor* actor : actors){
+            results.push_back(actor ? simmode_->getGlobalNedTransform().toGlobalNed(FTransform(actor->GetActorRotation(), actor->GetActorLocation()))
+                : Pose::nanPose());
+        }
+    }, true);
+    return results;
+}
+
 bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimApi::Pose& pose, bool teleport)
 {
     bool result;
@@ -92,6 +105,28 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
             result = false;
     }, true);
     return result;
+}
+
+bool WorldSimApi::SpawnObject(const std::string& class_name, const WorldSimApi::Pose& pose)
+{
+    bool result = false;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &pose]() {
+        
+        FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
+        FActorSpawnParameters SpawnInfo;
+        
+        UClass* ObjectToSpawn = FindObject<UClass>(ANY_PACKAGE, class_name);
+        
+        auto spawned = simmode_->GetWorld()->SpawnActor(ObjectToSpawn, actor_transform, SpawnInfo); 
+        
+        if(spawned != nullptr) {
+            result = true;
+        }
+        
+    }, true);
+    
+    return result;
+    
 }
 
 void WorldSimApi::enableWeather(bool enable)

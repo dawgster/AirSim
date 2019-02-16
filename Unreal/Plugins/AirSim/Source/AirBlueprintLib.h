@@ -67,6 +67,25 @@ public:
 
         return nullptr;
     }
+    
+    template<typename T>
+    static std::vector<T*> FindActors(const UObject* context, FString name)
+    {
+        std::vector<T*> actorReturnVector;
+        TArray<AActor*> foundActors;
+        FindAllActor<T>(context, foundActors);
+        FName name_n = FName(*name);
+
+        for (AActor* actor : foundActors) {
+            if (actor->ActorHasTag(name_n) || actor->GetName().Compare(name) == 0) {
+                actorReturnVector.push_back(static_cast<T*>(actor));
+            }
+        }
+
+        //UAirBlueprintLib::LogMessage(name + TEXT(" Actor not found!"), TEXT(""), LogDebugLevel::Failure);
+
+        return actorReturnVector;
+    }
 
     template<typename T>
     static void FindAllActor(const UObject* context, TArray<AActor*>& foundActors)

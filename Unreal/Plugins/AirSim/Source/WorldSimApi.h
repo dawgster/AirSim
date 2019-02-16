@@ -5,6 +5,7 @@
 #include "api/WorldSimApiBase.hpp"
 #include "SimMode/SimModeBase.h"
 #include "AirSimCharacter.h"
+#include <memory>
 #include <string>
 
 class WorldSimApi : public msr::airlib::WorldSimApiBase {
@@ -32,7 +33,9 @@ public:
         const std::string& message_param = "", unsigned char severity = 0) override;
 
     virtual Pose getObjectPose(const std::string& object_name) const override;
+    virtual std::vector<Pose> getObjectPoses(const std::string& object_name) const override;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
+    virtual bool SpawnObject(const std::string& class_name, const WorldSimApi::Pose& pose) override;
 
     //----------- APIs to control ACharacter in scene ----------/
     virtual void charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name) override;
