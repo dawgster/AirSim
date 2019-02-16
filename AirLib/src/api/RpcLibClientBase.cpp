@@ -250,7 +250,14 @@ msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_n
 
 std::vector<msr::airlib::Pose> RpcLibClientBase::simGetObjectPoses(const std::string& object_name) const
 {
-    return pimpl_->client.call("simGetObjectPoses", object_name);.as<std::vector<RpcLibAdapatorsBase::Pose>>().to();
+    std::vector<msr::airlib::Pose> result;
+    std::vector<RpcLibAdapatorsBase::Pose> callResult = pimpl_->client.call("simGetObjectPoses", object_name).as<std::vector<RpcLibAdapatorsBase::Pose>>();
+    for (RpcLibAdapatorsBase::Pose pose : callResult)
+    {
+        result.push_back(pose.to());
+    }
+    
+    return result;
 }
 
 bool RpcLibClientBase::simSetObjectPose(const std::string& object_name, const msr::airlib::Pose& pose, bool teleport)
@@ -260,12 +267,7 @@ bool RpcLibClientBase::simSetObjectPose(const std::string& object_name, const ms
 
 bool RpcLibClientBase::simSpawnObject(const std::string& class_name, const msr::airlib::Pose& pose)
 {
-    return pimpl_->client.call("SpawnObject", class_name, pose);
-}
-
-void RpcLibClientBase::simSpawnObject(const std::string& class_name, const Pose& pose){
-    
-    pimpl_->client.call("SpawnObject", object_name, pose);
+    return pimpl_->client.call("SpawnObject", class_name, RpcLibAdapatorsBase::Pose(pose)).as<bool>();
 }
 
 CameraInfo RpcLibClientBase::simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name) const

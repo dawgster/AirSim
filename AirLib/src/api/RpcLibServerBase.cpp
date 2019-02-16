@@ -185,7 +185,7 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     });
     
     pimpl_->server.bind("simSpawnObject", [&](const std::string& class_name, const RpcLibAdapatorsBase::Pose& pose) -> bool {
-        const bool result = getWorldSimApi()->SpawnObject(object_name, pose); 
+        const bool result = getWorldSimApi()->SpawnObject(class_name, pose.to()); 
         return result;
     });
 
